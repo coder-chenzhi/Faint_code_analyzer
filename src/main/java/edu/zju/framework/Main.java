@@ -1,4 +1,4 @@
-package edu.zju;
+package edu.zju.framework;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,10 +16,12 @@ import soot.toolkits.scalar.FlowSet;
 public class Main {
 	public static void main(String[] args) 
 	{
-		
-		String Test= "edu.zju.testcase3";										//Stupid code to print out the class under analysis
+		String anaPath = "/home/chenzhi/Code/IdeaSpace/Faint_code_analyzer/src/main/java:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar";
+		String Test= "edu.zju.framework.testcase3";										//Stupid code to print out the class under analysis
 		System.out.println("Testing " + Test);
-		
+
+		Scene.v().setSootClassPath(anaPath);
+		Scene.v().loadNecessaryClasses();
 		SootClass c = Scene.v().loadClassAndSupport(Test); 				//load the class 
 		c.setApplicationClass(); 
 		
