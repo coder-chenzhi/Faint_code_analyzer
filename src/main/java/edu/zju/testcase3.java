@@ -1,3 +1,5 @@
+package edu.zju;
+
 public class testcase3
 {
 	public static int fun1(int g)

@@ -1,3 +1,4 @@
+package edu.zju;
 
 import java.util.Iterator;
 import soot.Local;
@@ -60,11 +61,10 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis
 	}
 	
 	
-	protected void copy(Object source, Object dest)
-	{
-	FlowSet sourceSet = (FlowSet) source,
-	destSet = (FlowSet) dest;
-	sourceSet.copy(destSet);
+	protected void copy(Object source, Object dest) {
+		FlowSet sourceSet = (FlowSet) source,
+		destSet = (FlowSet) dest;
+		sourceSet.copy(destSet);
 	}
     
 	       
@@ -84,10 +84,8 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis
 				Value use = box1.getValue();
 				if(use instanceof Local){
 					in.remove(use);
+				}
 			}
-
-			}
-
 		}
 
 		else if(s instanceof AssignStmt){   //Dep Kill
@@ -107,12 +105,9 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis
 					Value use = box1.getValue();
 					if(use instanceof Local){
 						in.remove(use);
-
 					}
-
 				}
 			}
-			
 		}
 		
 		else{ 									//for all other types of statements, kill the right hand side variables
@@ -121,8 +116,6 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis
 				Value use = box1.getValue();
 				if(use instanceof Local){
 					in.remove(use);
-
-
 				}
 			}
 		}
@@ -141,28 +134,16 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis
 							if(use==def){           //statements like x=x+1
 								flag2=false;       //Don't add anything
 							}
-
-
 						}
 					}
 					
 					if(flag2){                  //If left hand side variable is not available in the Operand section
 						in.add(def);			   //Generate it in InSet!!!	
 					}
-					}	
-				
+				}
 			}
-
-
-
 		}
-
-		
-
 	}
-    
-	
-	
 }
 
 
