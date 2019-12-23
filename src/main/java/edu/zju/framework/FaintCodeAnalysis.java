@@ -1,12 +1,16 @@
 package edu.zju.framework;
 
+import java.util.HashMap;
 import java.util.Iterator;
-import soot.Local;
-import soot.Value;
-import soot.ValueBox;
+import java.util.Map;
+import java.util.Set;
+
+import soot.*;
 import soot.jimple.AssignStmt;
 import soot.jimple.Stmt;
 import soot.jimple.internal.JInvokeStmt;
+import soot.tagkit.LineNumberTag;
+import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.scalar.ArraySparseSet;
 import soot.toolkits.scalar.BackwardFlowAnalysis;
@@ -14,12 +18,10 @@ import soot.toolkits.scalar.FlowSet;
 import soot.util.Chain;
 
 
-public  class FaintCodeAnalysis extends BackwardFlowAnalysis
-	{
+public  class FaintCodeAnalysis extends BackwardFlowAnalysis {
 	
 	private FlowSet localVariables; 
-	
-		
+
 	public	FaintCodeAnalysis (UnitGraph g)
 	{
 	  super(g);
@@ -147,5 +149,62 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis
 }
 
 
+class FaintCodeTrans extends BodyTransformer {
 
+	private static FaintCodeTrans instance = new FaintCodeTrans();
+
+	private HashMap results = new HashMap();
+
+	public static FaintCodeTrans getInstance() {
+		return instance;
+	}
+
+	protected void internalTransform(Body b, String phaseName, @SuppressWarnings("rawtypes") Map options) {
+		System.out.println("\n\nAnalysis of " + b.getMethod().getName() + "()  :");    //Print method name. Just User Friendly way!
+
+		UnitGraph g = new ExceptionalUnitGraph(b);
+
+		FaintCodeAnalysis an = new FaintCodeAnalysis(g); 			   //Run the analysis
+
+		Iterator sIt = b.getUnits().iterator();							//Get next units corresponding to body from the graph| Use iterator method
+		Unit u = null;													//Initialize units
+
+		while( sIt.hasNext() ) {
+			u = (Unit)sIt.next();											//Fill up the the units of the graph
+			FlowSet FaintVariables = (FlowSet) an.getFlowAfter(u);
+			Iterator variableIt = FaintVariables.iterator();			//Make an iterator on flowset
+
+			while( variableIt.hasNext() ) {
+				Value variable = (Value)variableIt.next();
+				Iterator defBox = u.getDefBoxes().iterator();			//Get all left hand side variables
+
+				while (defBox.hasNext()){
+					final ValueBox box1 = (ValueBox) defBox.next();
+					Value def = box1.getValue();						//put all the left hand side variables in def
+
+					if(variable == def){								//Check between flowset and def
+
+						if(!variable.toString().startsWith("$") && !variable.toString().equals("this")) {  //Parse the line number tag jimple implementation for local and aliased variables
+							LineNumberTag tag = (LineNumberTag)u.getTag("LineNumberTag"); 				//get tags|line numbers of the code
+
+							if(results.containsKey(u.toString()))										//containskey is a hashmap function which relates to index
+								results.put(u.toString(), results.get(u.toString())+", "+tag);			//get tag if line is mapped to hashmap function
+							else
+								results.put(u.toString(), tag);
+						}
+					}
+				}
+			}
+		}
+
+		Set<String> set = results.keySet();
+		Iterator<String> i = set.iterator();
+		while(i.hasNext()){
+			String unit = i.next().toString();
+			System.out.println("\nFaint code at line"+" "+results.get(unit));
+			System.out.println(unit);
+		}
+	}
+
+}
 
