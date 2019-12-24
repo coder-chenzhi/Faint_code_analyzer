@@ -11,7 +11,7 @@ public class MyMain
   {    
      List<String> sootArgs = new ArrayList<String>(Arrays.asList(args));
    
-     sootArgs.add("edu.zju.framework.testcase3");
+     sootArgs.add("edu.zju.testcase3");
      sootArgs.add(0, "-keep-line-number");
      sootArgs.add("-output-format");
      sootArgs.add("none");

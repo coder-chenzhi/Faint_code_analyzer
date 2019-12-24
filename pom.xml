@@ -5,6 +5,19 @@
 	<groupId>edu.zju</groupId>
 	<artifactId>faint_variable_analysis</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+				<configuration>
+					<compilerArgs>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<packaging>jar</packaging>
 
 	<name>faint_variable_analysis</name>

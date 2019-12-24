@@ -1,4 +1,4 @@
-package edu.zju.framework;
+package edu.zju;
 
 public class owntestcase1 {
 	public static void foo() {

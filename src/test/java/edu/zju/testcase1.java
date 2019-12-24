@@ -1,4 +1,4 @@
-package edu.zju.framework;
+package edu.zju;
 
 public class testcase1 {
      
@@ -30,5 +30,11 @@ public class testcase1 {
           sum=sum+i;  
         }                    
         return sum;          
+    }
+
+    public static void transitiveDead() {
+        int a = 1, b = 2, c = 3;
+        b = 2 * a;
+        c = a + b;
     }
 }

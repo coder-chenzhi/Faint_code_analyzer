@@ -26,29 +26,36 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis {
 	{
 	  super(g);
 	  
-	    Chain locs=g.getBody().getLocals();
-		localVariables=new ArraySparseSet();
-		Iterator it=locs.iterator();
+	    Chain locs = g.getBody().getLocals();
+		localVariables = new ArraySparseSet();
+		Iterator it = locs.iterator();
 		while(it.hasNext()) {
-		    Local loc=(Local) it.next();
+		    Local loc = (Local) it.next();
 		    localVariables.add(loc);
 		}
 	    
 	  doAnalysis();
 
 	}
-	
-	protected Object newInitialFlow()		// Used to initialize the in and out sets for each node. In our case, all variables are considered to be faint
-	{
-		FlowSet ret=new ArraySparseSet();		//Type of flowset
+
+	/**
+	 * Used to initialize the in and out sets for each node. In our case, all variables are considered to be faint
+	 * @return
+	 */
+	protected Object newInitialFlow() {
+		FlowSet ret = new ArraySparseSet();		//Type of flowset
 		localVariables.copy(ret);
 		return ret;
 	
 	}
-	
 
-	protected Object entryInitialFlow() {	//Returns a flow set representing the initial set of the entry node
-		FlowSet ret=new ArraySparseSet();
+
+	/**
+	 * Returns a flow set representing the initial set of the entry node
+	 * @return
+	 */
+	protected Object entryInitialFlow() {
+		FlowSet ret = new ArraySparseSet();
 		localVariables.copy(ret);			//Will be same as newInitialFlow
 		return ret;
 	}
@@ -70,13 +77,13 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis {
 	}
     
 	       
-    protected void flowThrough(Object outValue, Object unit,Object inValue)	{
-		FlowSet in  = (FlowSet) inValue,
-				out = (FlowSet) outValue;
-		Stmt    s   = (Stmt)    unit;
-		out.copy( in );
-		Iterator useBox = s.getUseBoxes().iterator(),  //Right hand side variables
-				 defBox = s.getDefBoxes().iterator();  //Left hand side variables
+    protected void flowThrough(Object outValue, Object unit, Object inValue)	{
+		FlowSet in  = (FlowSet) inValue;
+		FlowSet	out = (FlowSet) outValue;
+		Stmt s = (Stmt) unit;
+		out.copy(in);
+		Iterator useBox = s.getUseBoxes().iterator();  //Right hand side variables
+		Iterator defBox = s.getDefBoxes().iterator();  //Left hand side variables
 		boolean flag = true;
 		
 		if(s instanceof JInvokeStmt){       //Nested if-else of Kill functions 
@@ -97,7 +104,7 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis {
 				Value def = box.getValue();
 				if(def instanceof Local){
 					if(in.contains(def)){   //Checks if the left hand side variable belongs in the In set
-						flag=false;
+						flag = false;
 					}
 				}	
 			}
@@ -112,7 +119,7 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis {
 			}
 		}
 		
-		else{ 									//for all other types of statements, kill the right hand side variables
+		else { 									//for all other types of statements, kill the right hand side variables
 			while (useBox.hasNext()){
 				final ValueBox box1 = (ValueBox) useBox.next();
 				Value use = box1.getValue();
@@ -123,7 +130,7 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis {
 		}
 			
 		if(s instanceof AssignStmt){    //Now on to Generate function
-		    Boolean flag2=true;
+		    Boolean flag2 = true;
 			while (defBox.hasNext()){   //ConstGen
 
 				final ValueBox box = (ValueBox) defBox.next();
@@ -133,8 +140,8 @@ public  class FaintCodeAnalysis extends BackwardFlowAnalysis {
 						final ValueBox box1 = (ValueBox) useBox.next();
 						Value use = box1.getValue();  //Put all right hand side variables to valuebox
 						if(use instanceof Local){
-							if(use==def){           //statements like x=x+1
-								flag2=false;       //Don't add anything
+							if(use == def){           //statements like x=x+1
+								flag2 = false;       //Don't add anything
 							}
 						}
 					}
